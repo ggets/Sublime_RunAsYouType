@@ -1,0 +1,6 @@
+[
+  {
+    "caption": "RunAsYouType: Execute Build",
+    "command": "run_as_you_type_exec_prompt"
+  }
+]
