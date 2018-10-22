@@ -13,5 +13,5 @@ JavaScript: node.exe
 Plain text: calculate semi-colon-separated statements with a php script (provided in the scripts subdir)
 
 
-If the binaries are not located in any dir from your PATH variable, you will have to include the full directory.
+If the binaries are not located in any dir from your PATH variable, you will have to include the full directory path.
 With MySQL for convinience you can set your default settings in the global "my.cnf" file, in your home in ".my.cnf", or alternatively in another file and then include it in the settings.
