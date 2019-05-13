@@ -13,18 +13,13 @@
                         "caption": "Run As You Type", 
                         "children": [
                             {
-                                "caption": "Settings Default", 
-                                "args": {
-                                    "file": "${packages}/RunAsYouType/Run As You Type.sublime-settings"
-                                }, 
-                                "command": "open_file"
-                            }, 
-                            {
-                                "caption": "Settings User", 
-                                "args": {
-                                    "file": "${packages}/User/Run As You Type.sublime-settings"
-                                }, 
-                                "command": "open_file"
+                                "caption": "Settings",
+                                "command": "edit_settings", "args":
+                                {
+                                    "base_file": "${packages}/RunAsYouType/Run As You Type.sublime-settings",
+                                    "default": "//\"cmd_custom\" should contain custom defined cmds:\n{\n\t\"cmd_custom\":{\n\t}\n}\n"
+                                }
+
                             }, 
                             {
                                 "caption": "-"

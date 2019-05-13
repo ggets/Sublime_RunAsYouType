@@ -1,13 +1,26 @@
 __author__='GG [github.com/hkrware/]'
-__version__='1.1.3'
+__version__='1.1.5'
 __license__='Apache 2'
-__copyright__='Copyright 2018, Dreamflame Inc.'
+__copyright__='Copyright 2019, Dreamflame Inc.'
 import subprocess
 import sublime
 import sublime_plugin
-settings='Run As You Type.sublime-settings'
+import os
+import sys
+settings_file='Run As You Type.sublime-settings'
 statuserr=True
 rayt=None
+cmd={}
+def plugin_loaded():
+    global settings,cmd
+    settings=sublime.load_settings(settings_file)
+    if settings.has('cmd_custom'):
+        if settings.has('cmd'):
+            cmd=settings.get('cmd')
+        cmd_custom=settings.get('cmd_custom')
+        for c in cmd_custom:
+            cmd[c]=cmd_custom[c]
+
 class raytFN(sublime_plugin.TextCommand):
     def apply_settings(self,s):
         for k,v in s.items():
@@ -39,10 +52,15 @@ class raytExecCommand(raytFN):
     def exec_cmd(self,cmd):
         args=self.subprocess_args or {}
         args['shell']=self.shell
+        if self.view.file_name():
+            dirpath=os.path.dirname(self.view.file_name())
+        else:
+            dirpath=os.getcwd()
         cmd=subprocess.Popen(cmd,
                                stdin=subprocess.PIPE,
                                stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE,**args)
+                               stderr=subprocess.PIPE,
+                               cwd=dirpath,**args)
         (stdout,stderr)=cmd.communicate(self.txt.encode('UTF-8'))
         return (stdout,stderr,cmd.returncode)
     def prep_cmd(self,cmd):
@@ -68,20 +86,19 @@ class raytExecCommand(raytFN):
         return ' '.join(c)
 class raytCmdCommand(sublime_plugin.TextCommand):
     def run(self,text):
-        global settings,statuserr,rayt
+        global cmd,statuserr,rayt
         self.win=self.view.window()
         rayt=self.win.create_output_panel('rayt_out')
         self.win.run_command('show_panel',{'panel':'output.rayt_out'})
-        self.set=sublime.load_settings(settings)
         self.cmd=""
-        self.cmds=self.set.get('cmd',{})
         self.syntax=self.view.settings().get("syntax")
         try:
-            self.cmd=self.cmds[self.syntax]
+            self.cmd=cmd[self.syntax]
         except:
             msg=("No command is set for syntax: "+self.syntax)
             if statuserr:
                sublime.status_message(msg)
             rayt.run_command('rayt_out',{'txt':msg})
             return None
+        # self.cmd=self.cmd.replace("{filename}","")
         self.view.run_command('rayt_exec',{'cmd':self.cmd,'shell':True})

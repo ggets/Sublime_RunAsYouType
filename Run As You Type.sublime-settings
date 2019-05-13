@@ -1,8 +1,8 @@
 {
-  "cmd": {
-    "Packages/Text/Plain text.tmLanguage": "php /scripts/php/calc.php",
-    "Packages/PHP/PHP.sublime-syntax": "php",
-    "Packages/SQL/SQL.sublime-syntax": "mysql",
-    "Packages/JavaScript/JavaScript.sublime-syntax": "node",
+  "cmd":{
+    "Packages/Text/Plain text.tmLanguage":"php /scripts/php/calc.php",
+    "Packages/PHP/PHP.sublime-syntax":"php",
+    "Packages/SQL/SQL.sublime-syntax":"mysql --defaults-file=~/.my.rayt.cnf",
+    "Packages/JavaScript/JavaScript.sublime-syntax":"node",
   }
 }
