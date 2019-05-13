@@ -1,6 +1,23 @@
 [
   {
-    "caption": "RunAsYouType: Execute Build",
-    "command": "run_as_you_type_exec_prompt"
+    "caption":"Run as you type: Settings",
+    "command":"edit_settings",
+    "args":
+    {
+      "base_file":"${packages}/RunAsYouType/Run As You Type.sublime-settings",
+      "default":"//\"cmd_custom\" should contain custom defined cmds:\n{\n\t\"cmd_custom\":{\n\t}\n}\n"
+    }
+  },
+  {
+    "caption":"Run as you type: Key bindings",
+    "command":"open_file",
+    "args":
+    {
+      "file":"${packages}/RunAsYouType/Default (${platform}).sublime-keymap",
+    }
+  },
+  {
+    "caption":"Run as you type: Run",
+    "command":"rayt_cmd"
   }
 ]
