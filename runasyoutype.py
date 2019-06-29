@@ -1,4 +1,4 @@
-__author__='GG [github.com/hkrware/]'
+__author__='GG [github.com/ggetsov/]'
 __version__='1.1.6'
 __license__='Apache 2'
 __copyright__='Copyright 2019, Dreamflame Inc.'
