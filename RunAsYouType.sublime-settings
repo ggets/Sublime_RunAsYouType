@@ -4,5 +4,7 @@
     "Packages/PHP/PHP.sublime-syntax":"php",
     "Packages/SQL/SQL.sublime-syntax":"mysql --defaults-file=~/.my.rayt.cnf",
     "Packages/JavaScript/JavaScript.sublime-syntax":"node",
+    "Packages/Python/Python.sublime-syntax":"python3",
+    "Packages/JavaScript/JSON.sublime-syntax":"jq"
   }
 }

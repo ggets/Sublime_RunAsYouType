@@ -19,5 +19,9 @@
   {
     "caption":"Run as you type: Run",
     "command":"rayt_cmd"
+  },
+  {
+    "caption":"Run as you type: Run with additional parameters",
+    "command":"rayt_wparam_cmd"
   }
 ]

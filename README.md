@@ -1,4 +1,4 @@
-# Run As You Type v1.1.6 for SublimeText v3
+# Run As You Type v1.2.7 for SublimeText v3
 Create a command (you can bind to a key) to evaluate the contents of the current view (tab) without saving it (even for new tabs)
 (untested on Sublime text v2)
 
@@ -9,6 +9,10 @@ PHP: php.exe
 SQL: mysql.exe
 
 JavaScript: node.exe
+
+Python: python3.exe
+
+JSON: jq.exe
 
 Plain text: calculate semi-colon-separated statements with a php script (provided in the scripts subdir)
 
