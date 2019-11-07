@@ -1,5 +1,5 @@
 __author__='GG [github.com/ggetsov/]'
-__version__='1.2.7'
+__version__='1.2.8'
 __license__='Apache 2'
 __copyright__='Copyright 2019, Dreamflame Inc.'
 import subprocess
@@ -17,6 +17,7 @@ syntax																						=''
 cmd																								={}
 params_header																			="// Command parametters are saved here.\n"
 inpanel																						=None
+win																								=None
 def plugin_loaded():
 	global settings,cmd,params,params_file
 	settings=sublime.load_settings(settings_file)
@@ -103,7 +104,7 @@ class raytExecCommand(raytFN):
 		return ' '.join(c)
 class raytCmdCommand(sublime_plugin.TextCommand):
 	def exec(self):
-		global cmd,statuserr,rayt,params,inpanel
+		global cmd,statuserr,rayt,params,inpanel,win
 		view=self.view
 		param=None
 		if isinstance(inpanel,sublime.View) and inpanel.name() == 'rayt_param_input':
@@ -111,9 +112,10 @@ class raytCmdCommand(sublime_plugin.TextCommand):
 			view=inpanel.from_view
 			inpanel.close()
 			inpanel=None
-		self.win=view.window()
-		rayt=self.win.create_output_panel('rayt_out')
-		self.win.run_command('show_panel',{'panel':'output.rayt_out'})
+		if view.window() is not None:
+			win=view.window()
+		rayt=win.create_output_panel('rayt_out')
+		win.run_command('show_panel',{'panel':'output.rayt_out'})
 		self.syntax=view.settings().get("syntax")
 		if param is not None and isinstance(param,str) and params.get(self.syntax) is not param:
 			params.set(self.syntax,param)
