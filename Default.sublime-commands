@@ -1,27 +1,28 @@
 [
-  {
-    "caption":"Run as you type: Settings",
-    "command":"edit_settings",
-    "args":
-    {
-      "base_file":"${packages}/RunAsYouType/Run As You Type.sublime-settings",
-      "default":"//\"cmd_custom\" should contain custom defined cmds:\n{\n\t\"cmd_custom\":{\n\t}\n}\n"
-    }
-  },
-  {
-    "caption":"Run as you type: Key bindings",
-    "command":"open_file",
-    "args":
-    {
-      "file":"${packages}/RunAsYouType/Default (${platform}).sublime-keymap",
-    }
-  },
-  {
-    "caption":"Run as you type: Run",
-    "command":"rayt_cmd"
-  },
-  {
-    "caption":"Run as you type: Run with additional parameters",
-    "command":"rayt_wparam_cmd"
-  }
+	{
+		"caption":"Run as you type: Settings",
+		"command":"edit_settings",
+		"args":
+		{
+			"base_file":"${packages}/RunAsYouType/RunAsYouType.sublime-settings",
+			"user_file":"${packages}/User/RunAsYouType.sublime-settings",
+			"default":"//\"cmd_custom\" should contain custom defined cmds:\n{\n\t\"cmd_custom\":{\n\t}\n}\n"
+		}
+	},
+	{
+		"caption":"Run as you type: Key bindings",
+		"command":"open_file",
+		"args":
+		{
+			"file":"${packages}/RunAsYouType/Default (${platform}).sublime-keymap",
+		}
+	},
+	{
+		"caption":"Run as you type: Run",
+		"command":"rayt_cmd"
+	},
+	{
+		"caption":"Run as you type: Run with additional parameters",
+		"command":"rayt_wparam_cmd"
+	}
 ]

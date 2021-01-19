@@ -10,18 +10,21 @@
         "id":"package-settings",
         "children":[
           {
+            "mnemonic":"R",
             "caption":"Run As You Type",
             "children":[
               {
+                "mnemonic":"S",
                 "caption":"Settings",
                 "command":"edit_settings",
                 "args":
                 {
-                  "base_file":"${packages}/RunAsYouType/Run As You Type.sublime-settings",
+                  "base_file":"${packages}/RunAsYouType/RunAsYouType.sublime-settings",
                   "default":"//\"cmd_custom\" should contain custom defined cmds:\n{\n\t\"cmd_custom\":{\n\t}\n}\n"
                 }
               },
               {
+                "mnemonic":"K",
                 "caption":"Key Bindings",
                 "command":"open_file",
                 "args":

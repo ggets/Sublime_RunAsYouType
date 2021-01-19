@@ -1,33 +1,89 @@
 __author__='GG [github.com/ggetsov/]'
-__version__='1.2.8'
+__version__='1.3.4'
 __license__='Apache 2'
 __copyright__='Copyright 2019, Dreamflame Inc.'
-import subprocess
 import sublime
 import sublime_plugin
+import subprocess
 import os.path
-name																							=os.path.basename(os.path.abspath(os.path.dirname(__file__)))
-name																							=name.replace('.sublime-package','')
-settings_file																			='%s.sublime-settings'%name
-params_file																				='%s_params.json'%name
-grammar_file																			='Packages/%s/%s.tmLanguage'%(name,name)
-statuserr																					=True
-rayt																							=None
-syntax																						=''
-cmd																								={}
-params_header																			="// Command parametters are saved here.\n"
-inpanel																						=None
-win																								=None
+name																						=os.path.basename(os.path.abspath(os.path.dirname(__file__)))
+name																						=name.replace('.sublime-package','')
+settings_file																		='%s.sublime-settings'%name
+params_file																			='%s_params.json'%name
+grammar_file																		='Packages/%s/%s.tmLanguage'%(name,name)
+statuserr																				=True
+rayt																						=None
+syntax																					=''
+cmds																						={}
+params_header																		="// Command parametters are saved here.\n"
+inpanel																					=None
+win																							=None
+var																							=sublime.active_window().extract_variables()
+
 def plugin_loaded():
-	global settings,cmd,params,params_file
+	load_cmds()
+
+def load_settings():
+	global settings,params,settings_file,params_file
 	settings=sublime.load_settings(settings_file)
 	params=sublime.load_settings(params_file)
-	if settings.has('cmd_custom'):
-		if settings.has('cmd'):
-			cmd=settings.get('cmd')
-		cmd_custom=settings.get('cmd_custom')
+
+"""Get a setting from current view or global settings object.
+	@param	{string}					k										The setting to read.
+	@param	{mixed}						d										The default value to return if setting is
+																								non-existent in the view or global settings object.
+	@return	{mixed}																The setting value or the default one.
+"""
+def get_setting(k,d=None):
+	global settings
+	try:
+		settings
+	except NameError:
+		load_settings()
+	return settings.get(k,d)
+
+def load_cmds():
+	global cmds
+	cmds=get_setting('cmd')
+	cmd_custom=get_setting('cmd_custom')
+	if(settings.has('cmd') and settings.has('cmd_custom')):
 		for c in cmd_custom:
-			cmd[c]=cmd_custom[c]
+			cmds[c]=cmd_custom[c]
+
+
+class RAYTEvListener(sublime_plugin.EventListener):
+	monitored_extensions={'py':True,'sublime-settings':True,'json':True}
+	monitored_user_text='User.'
+	shift_by_user_dot_length=5 # len(monitored_user_text)
+	def GetPluginNameFromPath(self,_path=''):
+		global name,var
+		_file=_path.split('\\')[-1]
+		_ext=_file.split('.')[-1]
+		_index=_path.find(name)
+		_is_plugin_file=(_index>0)
+		_pack=var.get('packages',sublime.packages_path())
+		if(_path.find(_pack)>-1):
+			_plugin=_path[len(_pack)+1:len(_path)]
+		else:
+			_plugin=_path
+		if(self.monitored_extensions.get(_ext,None)):
+			if(_ext=='py'):
+				_plugin=_path[_index:(-1*(len(_ext)+1))]
+				_plugin_user=_path[_index-self.shift_by_user_dot_length:(-1*(len(_ext)+1))]
+				if(_plugin_user.startswith(self.monitored_user_text)):
+					_plugin=self.monitored_user_text+_plugin
+				return(_plugin,_is_plugin_file)
+			else:
+				return(_plugin,_is_plugin_file)
+		return(None,_is_plugin_file)
+	def on_post_save_async(self,_view):
+		_file=_view.file_name()
+		(_plugin,_is_plugin_file)=self.GetPluginNameFromPath(_file)
+		if(_is_plugin_file and (_plugin!=None)):
+			if(_plugin.endswith('py')):
+				sublime_plugin.reload_plugin(_plugin)
+			elif(_plugin.endswith('sublime-settings') or _plugin.endswith('json')):
+				load_cmds()
 
 class raytFN(sublime_plugin.TextCommand):
 	def apply_settings(self,s):
@@ -72,7 +128,7 @@ class raytExecCommand(raytFN):
 			stderr=subprocess.PIPE,
 			cwd=dirpath,**args)
 		(stdout,stderr)=cmd.communicate(self.txt.encode('utf-8'))
-		return (stdout,stderr,cmd.returncode)
+		return(stdout,stderr,cmd.returncode)
 	def prep_cmd(self,cmd):
 		global statuserr
 		try:
@@ -92,7 +148,7 @@ class raytExecCommand(raytFN):
 			stderr=stderr.decode('utf-8')
 		stderr=stderr.translate(str.maketrans('','',chr(0x0d)))
 		if statuserr:
-			sublime.status_message('Error %i executing command [%s]: %s'%(status,self.get_command_as_str(),stderr.replace("\n"," ")))
+			sublime.status_message('Error %i executing command [%s]:%s'%(status,self.get_command_as_str(),stderr.replace("\n"," ")))
 		rayt.run_command('rayt_out',{'txt':('Error %i executing command [%s]:\n%s\n'%(status,self.get_command_as_str(False),stderr))})
 		return None
 	def get_command_as_str(self,short=True):
@@ -104,42 +160,47 @@ class raytExecCommand(raytFN):
 		return ' '.join(c)
 class raytCmdCommand(sublime_plugin.TextCommand):
 	def exec(self):
-		global cmd,statuserr,rayt,params,inpanel,win
+		global statuserr,rayt,params,inpanel,win
+		load_cmds()
 		view=self.view
 		param=None
-		if isinstance(inpanel,sublime.View) and inpanel.name() == 'rayt_param_input':
+		if(isinstance(inpanel,sublime.View) and (inpanel.name()=='rayt_param_input')):
 			param=inpanel.substr(sublime.Region(0,inpanel.size()))
 			view=inpanel.from_view
 			inpanel.close()
 			inpanel=None
-		if view.window() is not None:
+			win=None
+		if(view.window() is not None):
 			win=view.window()
 		rayt=win.create_output_panel('rayt_out')
-		win.run_command('show_panel',{'panel':'output.rayt_out'})
+		if(win is not None):
+			win.run_command('show_panel',{'panel':'output.rayt_out'})
 		self.syntax=view.settings().get("syntax")
-		if param is not None and isinstance(param,str) and params.get(self.syntax) is not param:
+		if((param is not None) and (isinstance(param,str)) and (params.get(self.syntax) is not param)):
 			params.set(self.syntax,param)
 			sublime.save_settings(params_file)
 		self.cmd=""
-		try:
-			self.cmd=cmd[self.syntax]
-		except:
-			msg=("No command is set for syntax: "+self.syntax)
-			if statuserr:
-				sublime.status_message(msg)
-			rayt.run_command('rayt_out',{'txt':msg})
-			return None
-		param=param or params.get(self.syntax)
-		if param is not None and len(param):
-			self.cmd+=' '+param
-			# self.cmd=self.cmd.replace("{filename}","")
-		view.run_command('rayt_exec',{'cmd':self.cmd,'shell':True})
+		if(win is not None):
+			try:
+				self.cmd=cmds[self.syntax]
+				self.cmd=sublime.expand_variables(self.cmd,win.extract_variables())
+			except:
+				msg=("No command is set for syntax:"+self.syntax)
+				if statuserr:
+					sublime.status_message(msg)
+				rayt.run_command('rayt_out',{'txt':msg})
+				return None
+			param=param or params.get(self.syntax)
+			if param is not None and len(param):
+				self.cmd+=' '+param
+				# self.cmd=self.cmd.replace("{filename}","")
+			view.run_command('rayt_exec',{'cmd':self.cmd,'shell':True})
 	def run(self,edit):
 		self.exec()
 class raytWparamCmdCommand(raytCmdCommand):
-	input_message																		="Parameters:"
-	default_input																		=""
-	process_panel_input															=lambda s,i:''
+	input_message																	="Parameters:"
+	default_input																	=""
+	process_panel_input														=lambda s,i:''
 	def on_panel_change(self,val):
 		if not val and self.erase:
 			self.undo()
