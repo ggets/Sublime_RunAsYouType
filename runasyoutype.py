@@ -1,4 +1,4 @@
-__author__='GG [github.com/ggetsov/]'
+__author__='GG [github.com/ggets/]'
 __version__='1.3.4'
 __license__='Apache 2'
 __copyright__='Copyright 2019, Dreamflame Inc.'

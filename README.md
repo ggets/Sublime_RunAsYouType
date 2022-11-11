@@ -24,6 +24,8 @@ You get these by default:
 
 **JSON**: jq.exe
 
+**Bash**: bash.exe
+
 **Plain text**: calculate semi-colon-separated statements with a php script (provided in the scripts subdir)
 
 
